@@ -46,7 +46,7 @@ const data = [
     },
     {
         name: "Luka Dončić",
-        team: "Dallas Mavericks (DAL)",
+        team: "Los Angeles Lakers (LAL)",
         points: 28.9,
         rebounds: 9.5,
         assists: 8.1,
@@ -64,7 +64,7 @@ const data = [
     },
     {
         name: "Anthony Davis",
-        team: "Los Angeles Lakers (LAL)",
+        team: "Dallas Mavericks (DAL)",
         points: 27.8,
         rebounds: 15.6,
         assists: 4,
@@ -199,7 +199,7 @@ const data = [
     },
     {
         name: "Karl-Anthony Towns",
-        team: "Minnesota Timberwolves (MIN)",
+        team: "New York Knicks (NYK)",
         points: 19.1,
         rebounds: 9,
         assists: 2.6,
@@ -235,7 +235,7 @@ const data = [
     },
     {
         name: "Donte DiVincenzo",
-        team: "New York Knicks (NYK)",
+        team: "Minnesota Timberwolves (MIN)",
         points: 17.8,
         rebounds: 4,
         assists: 2.6,
@@ -443,7 +443,91 @@ const data = [
 ];
 
 
+const tableBody = document.getElementById("player-rows");
+
+function populateTable(players) {
+    tableBody.innerHTML = '';
+    players.forEach(player => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${player.name}</td>
+            <td>${player.team}</td>
+            <td>${player.points}</td>
+            <td>${player.rebounds}</td>
+            <td>${player.assists}</td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
 
 
+function populateTeams(players) {
+    let uniqueTeams = [];
+    players.forEach((player) => {
+        if (!uniqueTeams.includes(player.team)) {
+            uniqueTeams.push(player.team);
+        }
+    });
 
+    // console.log(uniqueTeams);
+    // console.log(uniqueTeams.length);
 
+    // create <option> elements
+    let selectElem = document.getElementById("team-filter");
+    uniqueTeams.forEach((team) => {
+        let optionElem = document.createElement("option");
+        optionElem.value = team;
+        optionElem.innerText = team;
+        selectElem.appendChild(optionElem);
+    });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    populateTable(data);
+    populateTeams(data);
+})
+
+function doFilter(rows, column, word) {
+    /* Loop through all table rows and hide rows
+       that have cells that don't match the search query.
+    */
+    for (let i = 0; i < rows.length; i++) {
+        let td = rows[i].getElementsByTagName("td")[column]
+        let txtValue = td.innerText
+
+        if (txtValue.toLowerCase().indexOf(word) > -1) {
+            rows[i].style.display = ""
+        } else {
+            rows[i].style.display = "none"
+        }
+    }
+}
+document.getElementById("search").addEventListener("keyup", function (e) {
+    let player = e.target.value.toLowerCase();
+    let rows = document.querySelectorAll("#player-rows tr");
+    doFilter(rows, 0, player);
+});
+
+document.getElementById("team-filter").addEventListener("change", function (e) {
+    let selectedTeam = e.target.value.toLowerCase();
+    let rows = document.querySelectorAll("#player-rows tr");
+
+    
+    if (selectedTeam === "all") {
+        rows.forEach(row => row.style.display = "");
+    } else {
+        
+        rows.forEach(row => {
+            let teamCell = row.cells[1].innerText.toLowerCase();
+            if (teamCell.indexOf(selectedTeam) > -1) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    }
+});
+
+document.getElementById("dark-mode-toggle").addEventListener("click", function () {
+    document.body.classList.toggle("dark-mode");
+});
